@@ -1,38 +1,40 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@layer base {
+  :root {
+    --font-pjs: "Plus Jakarta Sans", sans-serif;
+  }
 
-
+  body {
+    font-family: var(--font-pjs);
+  }
+}
 
 @theme {
-  --font-poppins: "Poppins", sans-serif; 
-}
+  /* ======================================= */
+  /* PALET WARNA UTAMA (Digital Modern)     */
+  /* ======================================= */
 
-
-/* index.css atau App.css */
-.scrollable {
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-}
-
-[data-theme="dark"] .scrollable {
-  scrollbar-color: #555 #1f2937;
-}
-
-.scrollable::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollable::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollable::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 9999px;
-}
-
-[data-theme="dark"] .scrollable::-webkit-scrollbar-thumb {
-  background-color: #555;
+  /* Warna Institusional & Kuat (Biru Tua) - Untuk Header, Navbar, Tombol Utama */
+  --color-primary: #002D62; 
+  /* Warna Teknologi & Aksi (Cyan Elektrik) - Untuk CTA, Hover, Ikon Aktif */
+  --color-accent: #00CED1;  
+  
+  /* Latar Belakang Halaman (Abu-abu Cerah) */
+  --color-bg-page: #F0F0F0; 
+  /* Latar Belakang Konten/Chatbox (Putih Bersih) */
+  --color-bg-surface: #FFFFFF;    
+  
+  /* Teks Utama (Hitam Arang) */
+  --color-text-Utama: #1F1F1F;      
+  /* Teks Sekunder/Teks di atas Primary (Putih) */
+  --color-text-Kedua: #FFFFFF; 
+  /* Teks Aksen (Cyan) */
+  --color-text-accent: var(--color-accent);
+  
+  /* ======================================= */
+  /* TYPOGRAPHY (Font Family)             */
+  /* ======================================= */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
 }
