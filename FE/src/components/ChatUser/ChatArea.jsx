@@ -38,6 +38,7 @@ const ChatArea = () => {
         "http://localhost:5000/api/student/chat",
         { message: currentInput }
       );
+      console.log("Response dari server:", res.data);
 
       const botMsg = {
         from: "bot",

@@ -23,7 +23,9 @@ def get_all_students():
 def update_student_status(studentId, status):
     from ..models.student_model import Student
     student = Student.query.filter(Student.nomor_induk_mahasiswa==studentId).first()
+    print(student)
     if not student:
         return None
     student.status_akun = status
     db.session.commit()
+    return student

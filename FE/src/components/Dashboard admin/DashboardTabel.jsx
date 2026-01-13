@@ -24,6 +24,7 @@ const DashboardTable = ({ filteredList, mahasiswaList, handleAction }) => {
 
   // FUNGSI onAction SEKARANG MENGIRIM NIM KE PARENT
   const onAction = (nim, action) => {
+    console.log("Konfirmasi aksi untuk NIM:", nim, "Aksi:", action);
     handleAction(nim, action); // Mengirim NIM ke DasborAdmin.jsx
     setShowConfirm(null);
   };
@@ -80,9 +81,6 @@ const DashboardTable = ({ filteredList, mahasiswaList, handleAction }) => {
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-slate-900">
                           {mhs.nama}
-                        </span>
-                        <span className="text-xs text-slate-500">
-                          {mhs.prodi}
                         </span>
                       </div>
                     </td>

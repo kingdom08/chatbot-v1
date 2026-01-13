@@ -37,8 +37,8 @@ const MahasiswaForm = () => {
       }
     } catch (error) {
       // Lebih baik mencetak error ke konsol untuk debugging BE
-      console.error("Login Error:", error.response?.data || error);
-      alert("NIM atau password salah");
+      console.error("Login Error:", error.response?.data.msg || error);
+      alert(error.response?.data.msg || "Login gagal. Silakan coba lagi.");
     }
   };
 

@@ -10,7 +10,7 @@ MODEL_PATH = os.path.abspath(os.path.join(BASE_DIR, '../../ml/'))
 # CHANGE 2: Go up two levels (../../) to find the data folder in BE root
 DATA_PATH = os.path.abspath(os.path.join(BASE_DIR, '../../data/dataset_bima_jonas_final_v2.xlsx'))
 
-print("Loading Model & Data...")
+print(" Model & Data...")
 
 model = joblib.load(os.path.join(MODEL_PATH, 'chatbot_model.pkl'))
 vectorizer = joblib.load(os.path.join(MODEL_PATH, 'vectorizer.pkl'))

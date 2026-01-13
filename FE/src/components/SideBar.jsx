@@ -33,7 +33,7 @@ const Sidebar = ({ onLogoutClick }) => {
     }`;
 
   return (
-    <div className="fixed top-0 left-0 flex flex-col w-64 h-screen bg-gray-50 border-r border-gray-200 p-4">
+    <div className="fixed top-0 left-0 flex flex-col w-64 h-screen bg-white-100 border-r border-gray-200 p-4">
       <div className="flex justify-between items-center mb-6">
         <span className="font-bold text-xl text-blue-700">B I M A</span>
       </div>

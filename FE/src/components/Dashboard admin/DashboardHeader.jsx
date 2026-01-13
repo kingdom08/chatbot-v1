@@ -42,10 +42,10 @@ const DashboardHeader = ({ searchTerm, setSearchTerm, filterStatus, setFilterSta
               </select>
             </div>
 
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            {/* <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
               <Download className="w-5 h-5" />
               <span className="hidden md:inline">Export</span>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

@@ -40,13 +40,13 @@ def list_students():
 
     return admin_list_students()
 
-@admin_bp.route('/students/<int:student_id>', methods=['GET'])
+@admin_bp.route('/students/<student_id>', methods=['GET'])
 @jwt_required()
 def get_student_detail(student_id): 
     return admin_get_student_detail(student_id)
 
 
-@admin_bp.route('/students/<int:student_id>', methods=['PATCH'])
+@admin_bp.route('/students/<student_id>', methods=['PATCH'])
 @jwt_required()
 @admin_required
 def update_student_status(student_id):

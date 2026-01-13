@@ -31,7 +31,7 @@ const Daftar = () => {
       });
 
       if (res.data.msg === "User registered succesfully") {
-        alert("Registrasi berhasil");
+        alert("Registrasi berhasil, Menunggu Persetujuan akun dari admin");
         navigate("/login");
       }
     } catch (error) {
