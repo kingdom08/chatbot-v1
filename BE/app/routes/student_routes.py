@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..utils.model import model, vectorizer, df
 from ..utils.preprocessing import clean_text
 from sklearn.metrics.pairwise import cosine_similarity
@@ -54,8 +55,8 @@ def predict():
 @jwt_required()
 @student_required
 def profile():
-    data = request.get_json()
-    studentId = data.get('studentId')
+    #data = request.get_json()
+    studentId = get_jwt_identity()
 
     return get_student_profile(studentId)
     
@@ -64,6 +65,7 @@ def profile():
 @jwt_required()
 @student_required
 def update_account():
+    studentId = get_jwt_identity()
     data = request.get_json()
     studentId = data.get('studentId')
     full_name = data.get('fullName')

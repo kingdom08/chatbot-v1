@@ -3,8 +3,8 @@
 3. npm run dev
 
 - login mahasiswa
--Username:19012345
--pass : 12345
+-Username:19191919
+-pass : rahasia123
 
 -login admin
 -admin

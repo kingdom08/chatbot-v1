@@ -1,42 +1,54 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, User, Bot, Loader2 } from "lucide-react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const ChatArea = () => {
-  // --- State & Refs ---
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = sessionStorage.getItem("chatHistory");
+    return saved ? JSON.parse(saved) : [];
+  });
+  
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const location = useLocation();
 
-  // --- Auto Scroll Function ---
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
+    sessionStorage.setItem("chatHistory", JSON.stringify(messages));
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // --- Handlers ---
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  useEffect(() => {
+    if (location.state && location.state.resetTrigger) {
+      setMessages([]);
+      setInput("");
+      sessionStorage.removeItem("chatHistory");
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
-    // 1. Pesan User
-    const userMsg = { from: "user", text: input };
+  const handleSend = async (customText = null) => {
+    const textToSend = typeof customText === 'string' ? customText : input;
+
+    if (!textToSend.trim()) return;
+
+    const userMsg = { from: "user", text: textToSend };
     setMessages((prev) => [...prev, userMsg]);
     
-    const currentInput = input;
     setInput(""); 
     setIsLoading(true);
 
     try {
-      // 2. Simulasi Delay UX
       await new Promise(resolve => setTimeout(resolve, 800)); 
 
       const res = await axios.post(
         "http://localhost:5000/api/student/chat",
-        { message: currentInput }
+        { message: textToSend }
       );
       console.log("Response dari server:", res.data);
 
@@ -57,8 +69,11 @@ const ChatArea = () => {
     }
   };
 
-  return (
+  const handleSuggestionClick = (text) => {
+    handleSend(text);
+  };
 
+  return (
     <div className="flex flex-col h-screen mt-30 relative ml-[480px]"> 
       
       <style>{`
@@ -73,7 +88,6 @@ const ChatArea = () => {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      {/* --- KOSONG STATE (Belum ada chat) --- */}
       {messages.length === 0 && (
         <div className="flex flex-col items-center justify-center flex-grow text-center p-8 opacity-60">
           <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
@@ -82,19 +96,23 @@ const ChatArea = () => {
           <h1 className="font-bold text-4xl text-blue-900 mb-2 tracking-tight">B I M A</h1>
           <p className="text-gray-500 text-lg">Asisten Bimbingan Mahasiswa Cerdas</p>
           <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg">
-             <span className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm text-gray-600 border cursor-pointer hover:bg-gray-50">
-               "Bagaimana cara daftar sidang?"
+             <span 
+                onClick={() => handleSuggestionClick("Siapa Pembuat Anda?")}
+                className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm text-gray-600 border cursor-pointer hover:bg-gray-50 hover:text-blue-600 transition-colors"
+             >
+               "Siapa Pembuat Anda?"
              </span>
-             <span className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm text-gray-600 border cursor-pointer hover:bg-gray-50">
-               "Cek status pengajuan saya"
+             <span 
+                onClick={() => handleSuggestionClick("Cara melakukan bimbingan dengan dosen")}
+                className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm text-gray-600 border cursor-pointer hover:bg-gray-50 hover:text-blue-600 transition-colors"
+             >
+               "Cara melakukan bimbingan dengan dosen"
              </span>
           </div>
         </div>
       )}
 
-      {/* --- AREA PESAN --- */}
       <div className={`flex-grow overflow-y-auto p-6 space-y-6 no-scrollbar ${messages.length === 0 ? 'hidden' : 'block'}`}>
-        
         {messages.map((msg, i) => (
           <div 
             key={i} 
@@ -124,10 +142,9 @@ const ChatArea = () => {
           </div>
         ))}
 
-        {/* Loading Bubble */}
         {isLoading && (
           <div className="flex w-full justify-start animate-pop-in">
-             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 flex-shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 flex-shrink-0 mt-1">
                 <Loader2 size={18} className="text-blue-600 animate-spin" />
               </div>
             <div className="bg-white border border-gray-100 px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center space-x-1">
@@ -141,7 +158,6 @@ const ChatArea = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* --- INPUT AREA --- */}
       <div className="p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 sticky bottom-0 z-10">
         <div className="max-w-4xl mx-auto relative flex items-center gap-3">
           <input
@@ -155,7 +171,7 @@ const ChatArea = () => {
           />
           
           <button
-            onClick={handleSend}
+            onClick={() => handleSend()}
             disabled={!input.trim() || isLoading}
             className={`p-4 rounded-full transition-all duration-200 shadow-md flex items-center justify-center 
               ${!input.trim() || isLoading 

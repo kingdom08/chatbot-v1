@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token
 from datetime import timedelta
 from flask import jsonify
 
+
 def student_register(studentId, full_name, email, password, whatsapp_number):
     if get_student_by_student_id(studentId):
         return {"msg": "student ID already exists"}, 400
@@ -20,10 +21,17 @@ def student_login(studentId, password):
             "msg": "Invalid username or password"
         }, 401
     
+
     if student.status_akun != "Aktif":
         return {
             "msg": f"Status akun '{student.status_akun}'. Silahkan menunggu akun diaktifkan atau coba hubungi admin."
         }, 403
+
+    if student.status_akun == 'Menunggu':
+        return jsonify({
+            "msg": "Akun Anda sedang dalam proses verifikasi oleh admin"
+        }), 403
+
 
     token = create_access_token(
         identity=str(student.nomor_induk_mahasiswa),
@@ -45,9 +53,10 @@ def student_login(studentId, password):
 def get_student_profile(studentId): 
     student = get_student_by_student_id(studentId)
     if not student:
-        return {
-            "msg": "Student not found"
-        }, 404
+
+        return jsonify({
+        "msg": "Student not found"
+         }), 404 # Perbaikan 1: Gunakan jsonify
 
     student_data = {
         "studentId": student.nomor_induk_mahasiswa,
@@ -58,10 +67,10 @@ def get_student_profile(studentId):
         "password": student.kata_sandi
     }
 
-    return {
-        "msg": "success",
+    return jsonify({ # Perbaikan 2: Gunakan jsonify
+         "msg": "success",
         "student": student_data
-    }, 200
+     }), 200
 
 def update_student_account(studentId, full_name=None, email=None, password=None, whatsapp_number=None):
     student = update_student_account(studentId, full_name, email, password, whatsapp_number)
