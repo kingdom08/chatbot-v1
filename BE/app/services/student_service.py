@@ -13,31 +13,26 @@ def student_register(studentId, full_name, email, password, whatsapp_number):
     create_student_account(studentId, full_name, email, hashed_password, whatsapp_number)
     return {"msg": "User registered succesfully"}, 201
     
-
 def student_login(studentId, password):
     student = get_student_by_student_id(studentId)
+    
+    # 1. Cek User & Password
     if not student or not verify_password(password, student.kata_sandi):
         return {
             "msg": "Invalid username or password"
         }, 401
     
-
-    if student.status_akun != "Aktif":
-        return {
-            "msg": f"Status akun '{student.status_akun}'. Silahkan menunggu akun diaktifkan atau coba hubungi admin."
-        }, 403
-
     if student.status_akun == 'Menunggu':
         return jsonify({
             "msg": "Akun Anda sedang dalam proses verifikasi oleh admin"
         }), 403
-
 
     token = create_access_token(
         identity=str(student.nomor_induk_mahasiswa),
         additional_claims={"role": "Student"},
         expires_delta=timedelta(hours=24)
     )
+    # ... return jsonify success ...
 
     return jsonify({ # <<< HARUS DIUBAH KE jsonify
         "msg": "success",

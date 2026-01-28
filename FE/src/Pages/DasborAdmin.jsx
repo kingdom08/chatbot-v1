@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react"; // <<< IMPORT useEffect
+import React, { useState, useEffect } from "react";
 import DashboardHeader from "../components/Dashboard admin/DashboardHeader";
 import DashboardStats from "../components/Dashboard admin/DasboardStats";
 import DashboardTable from "../components/Dashboard admin/DashboardTabel";
 import { UserCheck, UserX, Clock } from "lucide-react";
-import api from "../URL BE/api"; // <<< IMPORT API
+import api from "../URL BE/api";
 
 const DasborAdmin = () => {
-  // Ganti data dummy dengan state kosong
   const [mahasiswaList, setMahasiswaList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("Semua");
 
@@ -22,28 +20,25 @@ const DasborAdmin = () => {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      // Panggil endpoint GET /api/admin/students
+      // Mengambil data dari endpoint list mahasiswa
       const response = await api.get("/api/admin/students", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Mapping kunci dari BE (contoh: studentId) ke FE (nim)
+      // Mapping data dari format Backend ke format Frontend
       const students = response.data.students.map((s) => ({
-        nim: s.studentId, // BE: studentId -> FE: nim
-        nama: s.fullName, // BE: fullName -> FE: nama
-        email: s.email,
-        wa: s.whatsappNumber,
-        status: s.accountStatus, // BE: accountStatus -> FE: status
-        prodi: s.prodi || "Non-Informatika", // Asumsi prodi tidak selalu ada atau default
+        nim: s.studentId,         // Mapping studentId ke nim
+        nama: s.fullName,         // Mapping fullName ke nama
+        email: s.email,           // Mapping email
+        wa: s.whatsappNumber,     // Mapping whatsappNumber ke wa
+        status: s.accountStatus,  // Mapping accountStatus ke status
+        prodi: "Informatika",     // Default prodi
       }));
 
       setMahasiswaList(students);
       setLoading(false);
     } catch (err) {
-      console.error(
-        "Gagal mengambil data mahasiswa:",
-        err.response?.data || err
-      );
+      console.error("Gagal mengambil data mahasiswa:", err.response?.data || err);
       setError("Gagal memuat data. Pastikan server Flask berjalan.");
       setLoading(false);
     }
@@ -54,9 +49,27 @@ const DasborAdmin = () => {
   }, []);
 
   // ==========================================================
-  // 2. FUNGSI AKSI (UPDATE STATUS)
+  // 2. FUNGSI HELPER WHATSAPP
   // ==========================================================
-  // Menerima NIM dan ACTION dari DashboardTable
+  const kirimNotifikasiWA = (nomorWA, namaMahasiswa) => {
+    // Membersihkan karakter non-digit
+    let formattedWA = nomorWA.replace(/\D/g, ""); 
+    
+    // Konversi awalan 0 menjadi kode negara 62
+    if (formattedWA.startsWith("0")) {
+      formattedWA = "62" + formattedWA.substring(1);
+    }
+
+    const pesan = `Halo *${namaMahasiswa}*, akun Anda di aplikasi BIMA telah *DISETUJUI* oleh Admin. Sekarang Anda sudah bisa login menggunakan NIM dan Password Anda. Terima kasih!`;
+    const url = `https://wa.me/${formattedWA}?text=${encodeURIComponent(pesan)}`;
+    
+    // Membuka WhatsApp di tab baru
+    window.open(url, "_blank");
+  };
+
+  // ==========================================================
+  // 3. FUNGSI AKSI (UPDATE STATUS & WA NOTIF)
+  // ==========================================================
   const handleAction = async (nim, action) => {
     let newStatus = "";
 
@@ -69,23 +82,27 @@ const DasborAdmin = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Kirim PATCH request ke endpoint: /api/admin/students/<nim>
+      // Mengirim request PATCH untuk update status akun
       await api.patch(
-        `/api/admin/students/${nim}`,
-        {
-          status: newStatus,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `api/admin/students/${nim}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update state di frontend setelah sukses
+      // --- LOGIKA NOTIFIKASI WHATSAPP ---
+      if (action === "aktifkan") {
+        const student = mahasiswaList.find((m) => m.nim === nim);
+        if (student && student.wa) {
+          kirimNotifikasiWA(student.wa, student.nama);
+        }
+      }
+
+      // Update state local agar tampilan langsung berubah tanpa reload manual
       setMahasiswaList((prev) =>
         prev.map((m) => (m.nim === nim ? { ...m, status: newStatus } : m))
       );
 
-      alert(`Status NIM ${nim} berhasil diubah menjadi ${newStatus}.`);
+      alert(`Status mahasiswa berhasil diubah menjadi ${newStatus}.`);
     } catch (err) {
       console.error("Gagal update status:", err.response?.data || err);
       alert("Gagal mengubah status mahasiswa.");
@@ -93,12 +110,12 @@ const DasborAdmin = () => {
   };
 
   // ==========================================================
-  // 3. FILTERING DAN STATS
+  // 4. FILTERING DAN STATS (TETAP SAMA)
   // ==========================================================
   const filteredList = mahasiswaList.filter((mhs) => {
     const matchSearch =
       mhs.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mhs.nim.includes(searchTerm) ||
+      mhs.nim.toString().includes(searchTerm) ||
       mhs.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchFilter = filterStatus === "Semua" || mhs.status === filterStatus;
     return matchSearch && matchFilter;
@@ -108,14 +125,9 @@ const DasborAdmin = () => {
     total: mahasiswaList.length,
     aktif: mahasiswaList.filter((m) => m.status === "Aktif").length,
     menunggu: mahasiswaList.filter((m) => m.status === "Menunggu").length,
-    nonaktif: mahasiswaList.filter(
-      (m) => m.status === "Nonaktif" || m.status === "Ditolak"
-    ).length,
+    nonaktif: mahasiswaList.filter((m) => m.status === "Nonaktif" || m.status === "Ditolak").length,
   };
 
-  // ==========================================================
-  // 4. RENDER
-  // ==========================================================
   return (
     <div className="min-h-screen mt-19 pl-70 bg-gradient-to-br from-slate-50 to-slate-100 p-8">
       <div className="max-w-6xl mx-auto">
@@ -129,20 +141,21 @@ const DasborAdmin = () => {
         <DashboardStats stats={stats} />
 
         {loading ? (
-          <div className="text-center py-12 text-slate-500">
+          <div className="text-center py-12 text-slate-500 font-medium">
             Memuat data mahasiswa...
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-rose-600">{error}</div>
+          <div className="text-center py-12 text-rose-600 font-medium">{error}</div>
         ) : (
           <DashboardTable
             filteredList={filteredList}
-            mahasiswaList={mahasiswaList} // Tetap kirim seluruh list untuk counter
-            handleAction={handleAction} // Mengirim NIM dan aksi
+            mahasiswaList={mahasiswaList}
+            handleAction={handleAction}
           />
         )}
       </div>
     </div>
   );
 };
+
 export default DasborAdmin;
