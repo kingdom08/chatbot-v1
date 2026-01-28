@@ -29,9 +29,7 @@ const AdminForm = () => {
       // Simpan ID Admin jika perlu (sesuai kolom id_admin)
       if (res.data.id_admin) localStorage.setItem("adminId", res.data.id_admin);
 
-      alert("Login Admin Berhasil!");
       navigate("/admin/dasbor");
-
     } catch (error) {
       console.error(error);
       alert("Login gagal. Cek Nama Lengkap atau Password.");
@@ -47,7 +45,7 @@ const AdminForm = () => {
 
       <div className="mt-4">
         {/* Label disesuaikan dengan database */}
-        <label className="block text-sm font-medium mb-1">Nama Lengkap / Email</label>
+        <label className="block text-sm font-medium mb-1">Nama Lengkap</label>
         <input
           type="text"
           value={inputName}

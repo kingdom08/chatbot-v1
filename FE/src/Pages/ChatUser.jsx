@@ -1,31 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import ChatArea from "../components/ChatUser/ChatArea";
-import Logout from "../components/Logout";
-import { useNavigate } from "react-router-dom";
-import LoadingChat from "../components/LoadingChat";
-import Sidebar from "../components/SideBar";
+import { useOutletContext } from "react-router-dom";
+
 const ChatUser = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    setIsModalOpen(false);
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/");
-    }, 2000);
-  };
+  const { activeSessionId, handleSessionCreated } = useOutletContext();
 
   return (
-    <div className=" h-full bg-white w-320">
-       
-
-      <ChatArea />
-
-   
+    <div className="h-full bg-gray-50">
+      <ChatArea
+        sessionId={activeSessionId}
+        onSessionCreated={handleSessionCreated}
+      />
     </div>
   );
 };

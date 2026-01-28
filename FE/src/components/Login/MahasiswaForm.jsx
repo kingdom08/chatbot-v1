@@ -18,30 +18,26 @@ const MahasiswaForm = () => {
         password: password,
       });
 
-      
       if (res.data.msg === "success") {
         // 1. Ambil 'token' (sesuai BE Anda)
         localStorage.setItem("token", res.data.token);
 
-      
         localStorage.setItem(
           "role",
-          res.data.role?.toLowerCase() || "mahasiswa"
+          res.data.role?.toLowerCase() || "mahasiswa",
         );
 
         // 3. Simpan data profile yang dibutuhkan sidebar
         localStorage.setItem("nim", res.data.nomor_induk_mahasiswa);
         localStorage.setItem("nama", res.data.nama_lengkap);
 
-        alert("Login Mahasiswa Berhasil!");
-
         // Ganti navigate() dengan window.location.href untuk memaksa refresh
         window.location.href = "/user/chat";
       }
     } catch (error) {
       // Lebih baik mencetak error ke konsol untuk debugging BE
-      console.error("Login Error:", error.response?.data || error);
-      alert("NIM atau password salah");
+      console.error("Login Error:", error.response?.data.msg || error);
+      alert(error.response?.data.msg || "Login gagal. Silakan coba lagi.");
     }
   };
 
@@ -64,21 +60,19 @@ const MahasiswaForm = () => {
         />
       </div>
 
-     
       <div className="mt-4">
         <label className="block text-sm font-medium mb-1">Password</label>
-       
+
         <div className="relative w-full">
           <input
-          
             type={showPassword ? "text" : "password"}
             value={password}
-        
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full h-10 border border-gray-300 rounded-[5px] pl-3 pr-10 focus:ring-blue-500 focus:border-blue-500"
           />
-       
+
           <button
-            type="button" 
+            type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
           >

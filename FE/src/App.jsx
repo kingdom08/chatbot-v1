@@ -8,7 +8,6 @@ import DasborAdmin from "./pages/DasborAdmin";
 import Profil from "./pages/Profil";
 import LayoutUser from "./Layout/LayoutUser";
 import AdminLayout from "./Layout/AdminLayout";
-import History from "./Pages/History";
 import ProfilAdmin from "./Pages/ProfilAdmin";
 
 const App = () => {
@@ -26,7 +25,6 @@ const App = () => {
             <Route index element={<ChatUser />} />
             <Route path="chat" element={<ChatUser />} />
             <Route path="profil" element={<Profil />} />
-            <Route path="history" element={<History />} />
           </Route>
           {/* Rute Admin */}
           <Route path="/admin" element={<AdminLayout />}>
