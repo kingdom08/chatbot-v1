@@ -5,7 +5,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { User, MessageCircle, Trash2 } from "lucide-react";
+import { User, MessageCircle, Trash2, Calculator } from "lucide-react";
 import { FaPlus, FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { MdManageAccounts } from "react-icons/md";
@@ -194,10 +194,16 @@ const Sidebar = forwardRef(
           </NavLink>
 
           {role === "admin" && (
-            <NavLink to="/admin/dasbor" className={linkStyle}>
-              <MdManageAccounts size={20} className="mr-3" />
-              <span>Kelola Akun</span>
-            </NavLink>
+            <>
+              <NavLink to="/admin/dasbor" className={linkStyle}>
+                <MdManageAccounts size={20} className="mr-3" />
+                <span>Kelola Akun</span>
+              </NavLink>
+              <NavLink to="/admin/perhitungan-model" className={linkStyle}>
+                <Calculator size={20} className="mr-3" />
+                <span>Perhitungan Model</span>
+              </NavLink>
+            </>
           )}
         </nav>
 

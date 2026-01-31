@@ -1,9 +1,47 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity # <<< PERBAIKAN: Import get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..utils.decorators import admin_required
-from ..services.admin_service import admin_update_account, admin_get_profile, admin_list_students, admin_get_student_detail,admin_update_student_status
+from ..services.admin_service import admin_update_account, admin_get_profile, admin_list_students, admin_get_student_detail, admin_update_student_status
+from ..services.model_calculation_service import get_full_calculation
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
+
+
+# ========== MODEL CALCULATION ROUTES ==========
+
+@admin_bp.route('/model-calculation', methods=['GET'])
+@jwt_required()
+@admin_required
+def get_model_calculation():
+    """
+    Mengembalikan perhitungan lengkap step-by-step dengan kalimat uji default.
+    """
+    try:
+        result = get_full_calculation()
+        return jsonify({"msg": "success", "data": result}), 200
+    except Exception as e:
+        return jsonify({"msg": "error", "error": str(e)}), 500
+
+
+@admin_bp.route('/model-calculation', methods=['POST'])
+@jwt_required()
+@admin_required
+def post_model_calculation():
+    """
+    Mengembalikan perhitungan lengkap step-by-step dengan kalimat uji custom.
+    Body: { "test_sentence": "..." }
+    """
+    try:
+        data = request.get_json()
+        test_sentence = data.get('test_sentence', 'Nilai KHS Saya Belum Masuk')
+        
+        if not test_sentence or not test_sentence.strip():
+            return jsonify({"msg": "error", "error": "Kalimat uji tidak boleh kosong"}), 400
+        
+        result = get_full_calculation(test_sentence.strip())
+        return jsonify({"msg": "success", "data": result}), 200
+    except Exception as e:
+        return jsonify({"msg": "error", "error": str(e)}), 500
 
 @admin_bp.route('/profile', methods=['GET'])
 @jwt_required()

@@ -9,6 +9,7 @@ import Profil from "./pages/Profil";
 import LayoutUser from "./Layout/LayoutUser";
 import AdminLayout from "./Layout/AdminLayout";
 import ProfilAdmin from "./Pages/ProfilAdmin";
+import PerhitunganModel from "./Pages/PerhitunganModel";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
             <Route index element={<ProfilAdmin />} />
             <Route path="profiladmin" element={<ProfilAdmin />} />
             <Route path="dasbor" element={<DasborAdmin />} />
+            <Route path="perhitungan-model" element={<PerhitunganModel />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.abspath(os.path.join(BASE_DIR, '../../ml/'))
 
 # CHANGE 2: Go up two levels (../../) to find the data folder in BE root
-DATA_PATH = os.path.abspath(os.path.join(BASE_DIR, '../../data/dataset_bima_jonas_final_v2.xlsx'))
+DATA_PATH = os.path.abspath(os.path.join(BASE_DIR, '../../data/dataset_bersih.xlsx'))
 
 print(" Model & Data...")
 
